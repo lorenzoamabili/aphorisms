@@ -176,6 +176,11 @@ aphorisms = [
     {"text": "Quando sai tutto muori presto e solo. Sai l'indicibile.", "author": "Paolo Sorrentino"}
 ]
 
+@app.route('/')
+def home():
+    message = "Welcome to my Flask app!"
+    return render_template('index.html', message=message)
+
 @app.route('/get_random_aphorism', methods=['GET'])
 def get_random_aphorism():
     """API to get a random aphorism."""
