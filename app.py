@@ -178,7 +178,7 @@ aphorisms = [
 
 @app.route('/')
 def home():
-    message = "Welcome to my Flask app!"
+    message = "Welcome to the Aphorism App!"
     return render_template('index.html', message=message)
 
 @app.route('/get_random_aphorism', methods=['GET'])
@@ -199,4 +199,4 @@ def add_aphorism():
     return jsonify({'message': 'Invalid input.'}), 400
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)

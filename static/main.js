@@ -1,42 +1,42 @@
-// DOM elements
-const aphorismText = document.getElementById('aphorism-text');
-const aphorismAuthor = document.getElementById('aphorism-author');
-const message = document.getElementById('message');
-
-// Fetch and display a random aphorism
-document.getElementById('new-aphorism-btn').addEventListener('click', () => {
-    fetch('/get_random_aphorism')
+// Fetch a random aphorism when the "Show a new aphorism" button is clicked
+document.getElementById("new-aphorism-btn").addEventListener("click", function() {
+    fetch("/get_random_aphorism")
         .then(response => response.json())
         .then(data => {
-            aphorismText.textContent = `"${data.text}"`;
-            aphorismAuthor.textContent = `– ${data.author}`;
+            document.getElementById("aphorism-text").textContent = `"${data.text}"`;
+            document.getElementById("aphorism-author").textContent = `- ${data.author}`;
         })
-        .catch(err => {
-            console.error('Error fetching aphorism:', err);
-            aphorismText.textContent = 'Could not load aphorism.';
-            aphorismAuthor.textContent = '';
+        .catch(error => {
+            console.error("Error fetching aphorism:", error);
         });
 });
 
-// Add a new aphorism
-document.getElementById('aphorism-form').addEventListener('submit', (event) => {
+// Handle the submission of a new aphorism form
+document.getElementById("aphorism-form").addEventListener("submit", function(event) {
     event.preventDefault();
+    
+    const newAphorism = document.getElementById("new-aphorism").value;
+    const newAuthor = document.getElementById("new-author").value;
 
-    const newAphorism = document.getElementById('new-aphorism').value;
-    const newAuthor = document.getElementById('new-author').value;
+    const formData = new FormData();
+    formData.append("aphorism", newAphorism);
+    formData.append("author", newAuthor);
 
-    fetch('/add_aphorism', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: `aphorism=${encodeURIComponent(newAphorism)}&author=${encodeURIComponent(newAuthor)}`
+    fetch("/add_aphorism", {
+        method: "POST",
+        body: formData
     })
-        .then(response => response.json())
-        .then(data => {
-            message.textContent = data.message;
-            document.getElementById('aphorism-form').reset();
-        })
-        .catch(err => {
-            console.error('Error adding aphorism:', err);
-            message.textContent = 'Failed to add aphorism.';
-        });
+    .then(response => response.json())
+    .then(data => {
+        document.getElementById("message").textContent = data.message;
+        if (data.message === 'Aphorism added successfully!') {
+            // Clear form fields
+            document.getElementById("new-aphorism").value = '';
+            document.getElementById("new-author").value = '';
+        }
+    })
+    .catch(error => {
+        console.error("Error adding aphorism:", error);
+        document.getElementById("message").textContent = 'Failed to add aphorism.';
+    });
 });
