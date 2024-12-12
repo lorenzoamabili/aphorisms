@@ -176,37 +176,22 @@ aphorisms = [
     {"text": "Quando sai tutto muori presto e solo. Sai l'indicibile.", "author": "Paolo Sorrentino"}
 ]
 
-# Route to display the app
-@app.route('/')
-def index():
-    # Pass a random aphorism to the HTML template
-    random_aphorism = random.choice(aphorisms)
-    return render_template('index.html', aphorism=random_aphorism)
-
-# Route to handle the form submission to add a new aphorism
-@app.route('/add_aphorism', methods=['POST'])
-def add_aphorism():
-    # Retrieve form data
-    new_text = request.form.get('aphorism', '').strip()
-    new_author = request.form.get('author', '').strip()
-    
-    # Ensure valid data is submitted
-    if new_text:
-        aphorisms.append({"text": new_text, "author": new_author if new_author else "Unknown"})
-        return jsonify({'message': 'Aphorism added successfully!'})
-    else:
-        return jsonify({'message': 'Aphorism text cannot be empty.'}), 400
-
-# Route to get a random aphorism via Ajax
 @app.route('/get_random_aphorism', methods=['GET'])
 def get_random_aphorism():
-    # Select a random aphorism
+    """API to get a random aphorism."""
     random_aphorism = random.choice(aphorisms)
-    return jsonify({
-        'text': random_aphorism['text'],
-        'author': random_aphorism['author']
-    })
+    return jsonify(random_aphorism)
+
+@app.route('/add_aphorism', methods=['POST'])
+def add_aphorism():
+    """API to add a new aphorism."""
+    new_text = request.form.get('aphorism')
+    new_author = request.form.get('author', 'Unknown')
+
+    if new_text:
+        aphorisms.append({"text": new_text, "author": new_author})
+        return jsonify({'message': 'Aphorism added successfully!'}), 200
+    return jsonify({'message': 'Invalid input.'}), 400
 
 if __name__ == '__main__':
-    # Run the app in debug mode
-    app.run(debug=True)
+    app.run()

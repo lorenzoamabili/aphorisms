@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aphorism App</title>
+    <style>
+        body {
+            font-family: Georgia, serif;
+            margin: 20px;
+        }
+        #aphorism-container {
+            margin-top: 20px;
+            font-style: italic;
+            font-size: 18px;
+        }
+        .author {
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        input, button {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+    <h1>The Aphorism App</h1>
+
+    <div id="aphorism-container">
+        <p id="aphorism-text"></p>
+        <p class="author" id="aphorism-author"></p>
+    </div>
+
+    <button id="new-aphorism-btn">Show a new aphorism</button>
+
+    <h3>Add your own aphorism</h3>
+    <form id="aphorism-form">
+        <input type="text" id="new-aphorism" placeholder="Enter your aphorism" required>
+        <input type="text" id="new-author" placeholder="Author (optional)">
+        <button type="submit">Add Aphorism</button>
+    </form>
+    <p id="message"></p>
+
+    <script src="static/main.js"></script>
+</body>
+</html>

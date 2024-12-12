@@ -1,0 +1,16 @@
+[build]
+  publish = "./"
+  command = "python app.py"
+
+[dev]
+  framework = "other"
+
+[[redirects]]
+  from = "/get_random_aphorism"
+  to = "/.netlify/functions/get_random_aphorism"
+  status = 200
+
+[[redirects]]
+  from = "/add_aphorism"
+  to = "/.netlify/functions/add_aphorism"
+  status = 200
