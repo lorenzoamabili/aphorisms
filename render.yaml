@@ -1,0 +1,6 @@
+services:
+  - type: web
+    name: aphorisms
+    env: python
+    buildCommand: ""
+    startCommand: gunicorn app:app
