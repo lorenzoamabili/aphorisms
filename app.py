@@ -786,9 +786,9 @@ def add_aphorism():
         return jsonify({"error": str(e)}), 500
 
 
-@app.on_startup
-def create_tables():
-    db.create_all()
+# @app.on_startup
+# def create_tables():
+#     db.create_all()
 
 
 if __name__ == '__main__':
