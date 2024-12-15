@@ -1,9 +1,64 @@
 from flask import Flask, render_template, request, jsonify, session
-import random
+from flask_sqlalchemy import SQLAlchemy
+import os
 
 app = Flask(__name__)
 # For session management (not directly used here)
 app.secret_key = 'your_secret_key'
+
+# Configure the database connection
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', '').replace(
+    "postgres://aphorismsdb_user:UxX03JBPW4Lf1DDbFcXC5s8Vqoy7eO8F@dpg-ctfgci3tq21c73bupmc0-a:5432/aphorismsDB",
+    "postgresql://aphorismsdb_user:UxX03JBPW4Lf1DDbFcXC5s8Vqoy7eO8F@dpg-ctfgci3tq21c73bupmc0-a:5432/aphorismsDB")
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+# Replace is for compatibility
+
+# Initialize the database
+db = SQLAlchemy(app)
+
+# Define the Aphorism model
+
+
+class Aphorism_it(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    text = db.Column(db.Text, nullable=False)
+    author = db.Column(db.String(100), nullable=True)
+    created_at = db.Column(db.DateTime, server_default=db.func.now())
+
+    def to_dict(self):
+        return {"id": self.id, "text": self.text, "author": self.author, "created_at": self.created_at}
+
+
+class Aphorism_en(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    text = db.Column(db.Text, nullable=False)
+    author = db.Column(db.String(100), nullable=True)
+    created_at = db.Column(db.DateTime, server_default=db.func.now())
+
+    def to_dict(self):
+        return {"id": self.id, "text": self.text, "author": self.author, "created_at": self.created_at}
+# Create tables (run once during setup)
+
+
+@app.before_first_request
+def create_tables():
+    db.create_all()
+
+
+def populate_tables():
+    # Populate Category1 table
+    for aphorism in aphorisms["en"]:
+        new_aphorism = Aphorism_en(text=aphorism)
+        db.session.add(new_aphorism)
+
+    # Populate Category2 table
+    for aphorism in aphorisms["it"]:
+        new_aphorism = Aphorism_it(text=aphorism)
+        db.session.add(new_aphorism)
+
+    db.session.commit()
+    print("Tables populated successfully!")
+
 
 # List of aphorisms
 aphorisms = {
@@ -660,28 +715,87 @@ def set_language():
     return jsonify({'message': 'Language updated', 'lang': lang})
 
 
+# @ app.route('/get_aphorisms', methods=['GET'])
+# def get_aphorisms():
+#     """Get aphorisms for the selected language."""
+#     lang = session.get('lang', 'en')
+#     return jsonify(aphorisms.get(lang, aphorisms['en']))
+
+
+# @ app.route('/add_aphorism', methods=['POST'])
+# def add_aphorism():
+#     """Add a new aphorism to the current language."""
+#     lang = session.get('lang', 'en')
+#     new_text = request.form.get('aphorism')
+#     new_author = request.form.get('author', 'Unknown')
+
+#     if new_text:
+#         aphorisms[lang].append({"text": new_text, "author": new_author})
+#         return jsonify({'message': 'Aphorism added successfully!'}), 200
+#     return jsonify({'message': 'Invalid input.'}), 400
+
+
+# # Route to add an aphorism
+# @app.route('/aphorisms', methods=['POST'])
+# def add_aphorism():
+#     data = request.json
+#     text = data.get('text')
+#     author = data.get('author', 'Unknown')
+
+#     if not text:
+#         return jsonify({"error": "Aphorism text is required"}), 400
+
+#     aphorism = Aphorism(text=text, author=author)
+#     db.session.add(aphorism)
+#     db.session.commit()
+
+#     return jsonify(aphorism.to_dict()), 201
+
+# # Route to fetch all aphorisms
+# @app.route('/aphorisms', methods=['GET'])
+# def get_aphorisms():
+#     aphorisms = Aphorism.query.order_by(Aphorism.created_at.desc()).all()
+#     return jsonify([a.to_dict() for a in aphorisms])
+
+
 @ app.route('/get_aphorisms', methods=['GET'])
 def get_aphorisms():
     """Get aphorisms for the selected language."""
     lang = session.get('lang', 'en')
-    return jsonify(aphorisms.get(lang, aphorisms['en']))
+    aphorisms[lang] = f"Aphorism_{lang}".query.order_by(
+        f"Aphorism_{lang}".created_at.desc()).all()
+    return jsonify([a.to_dict() for a in aphorisms[lang]])
 
 
-@ app.route('/add_aphorism', methods=['POST'])
+@app.route('/add_aphorisms', methods=['POST'])
 def add_aphorism():
-    """Add a new aphorism to the current language."""
-    lang = session.get('lang', 'en')
-    new_text = request.form.get('aphorism')
-    new_author = request.form.get('author', 'Unknown')
+    try:
+        # Parse incoming JSON data
+        lang = session.get('lang', 'en')
+        data = request.json
+        text = data.get('text')
+        # Default author if not provided
+        author = data.get('author', 'Anonymous')
 
-    if new_text:
-        aphorisms[lang].append({"text": new_text, "author": new_author})
-        return jsonify({'message': 'Aphorism added successfully!'}), 200
-    return jsonify({'message': 'Invalid input.'}), 400
+        if not text:
+            return jsonify({"error": "Aphorism text is required"}), 400
+
+        # Create a new aphorism entry
+        aphorism = f"Aphorism_{lang}"(text=text, author=author)
+        db.session.add(aphorism)
+        db.session.commit()
+
+        return jsonify({"message": "Aphorism added successfully!", "aphorism": aphorism.to_dict()}), 201
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    with app.app_context():  # Ensure the app context is active
+        create_tables()      # Create tables
+        populate_tables()    # Populate tables
+        app.run(debug=True)
 
     # {"text": "Penso che il cervello sia l'anima, non credo alla vita dopo la morte ne tanto meno a un paradiso in versione condominiale, dove rincontrare amici, nemici, parenti, conoscenti.", "author": "Margherita Hack"},
     # {"text": "Gli uomini sono donne che non ce l'hanno fatta.", "author": "Unknown"},
