@@ -40,11 +40,6 @@ class Aphorism_en(db.Model):
 # Create tables (run once during setup)
 
 
-@app.before_first_request
-def create_tables():
-    db.create_all()
-
-
 def populate_tables():
     # Populate Category1 table
     for aphorism in aphorisms["en"]:
@@ -789,6 +784,11 @@ def add_aphorism():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+
+@app.on_startup
+def create_tables():
+    db.create_all()
 
 
 if __name__ == '__main__':
