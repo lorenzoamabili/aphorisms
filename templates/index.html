@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Aphorism App</title>
-    <link rel="icon" type="image/x-icon" sizes="32x32" href="{{ url_for('static', filename='favicon-32x32.png') }}">
     <style>
         body {
             font-family: Georgia, serif;
@@ -19,7 +18,7 @@
             font-weight: bold;
             margin-top: 10px;
         }
-        input, button {
+        input, button, select {
             padding: 10px;
             margin: 10px 0;
             border-radius: 5px;
@@ -30,6 +29,14 @@
 <body>
     <h1>The Aphorism App</h1>
 
+    <!-- Language Dropdown -->
+    <label for="language-selector">Choose a language:</label>
+    <select id="language-selector">
+        <option value="en" {{ 'selected' if language == 'en' }}>English</option>
+        <option value="it" {{ 'selected' if language == 'it' }}>Italian</option>
+    </select>
+
+    <!-- Display Aphorisms -->
     <div id="aphorism-container">
         <p id="aphorism-text"></p>
         <p class="author" id="aphorism-author"></p>
@@ -45,6 +52,62 @@
     </form>
     <p id="message"></p>
 
-    <script src="static/main.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const languageSelector = document.getElementById('language-selector');
+            const aphorismText = document.getElementById('aphorism-text');
+            const aphorismAuthor = document.getElementById('aphorism-author');
+            const message = document.getElementById('message');
+
+            // Load initial aphorisms
+            fetchAphorisms();
+
+            // Language change event
+            languageSelector.addEventListener('change', () => {
+                const selectedLang = languageSelector.value;
+                fetch('/set_language', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: `lang=${selectedLang}`
+                })
+                .then(response => response.json())
+                .then(() => fetchAphorisms());
+            });
+
+            // Fetch aphorisms
+            function fetchAphorisms() {
+                fetch('/get_aphorisms')
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.length > 0) {
+                            const randomAphorism = data[Math.floor(Math.random() * data.length)];
+                            aphorismText.textContent = randomAphorism.text;
+                            aphorismAuthor.textContent = `– ${randomAphorism.author}`;
+                        }
+                    });
+            }
+
+            // Add a new aphorism
+            document.getElementById('aphorism-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                const newAphorism = document.getElementById('new-aphorism').value;
+                const newAuthor = document.getElementById('new-author').value;
+
+                fetch('/add_aphorism', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: `aphorism=${newAphorism}&author=${newAuthor}`
+                })
+                .then(response => response.json())
+                .then(data => {
+                    message.textContent = data.message;
+                    fetchAphorisms();
+                });
+            });
+
+            // Show a new random aphorism
+            document.getElementById('new-aphorism-btn').addEventListener('click', fetchAphorisms);
+        });
+    </script>
 </body>
 </html>
