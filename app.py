@@ -786,22 +786,10 @@ def add_aphorism():
         return jsonify({"error": str(e)}), 500
 
 
-# @app.on_startup
-# def create_tables():
-#     db.create_all()
-
-
 if __name__ == '__main__':
     with app.app_context():  # Ensure the app context is active
         db.create_all()      # Create tables
         app.run(debug=True)
-
-
-# if __name__ == '__main__':
-#     with app.app_context():  # Ensure the app context is active
-#         create_tables()      # Create tables
-#         populate_tables()    # Populate tables
-#         app.run(debug=True)
 
     # {"text": "Penso che il cervello sia l'anima, non credo alla vita dopo la morte ne tanto meno a un paradiso in versione condominiale, dove rincontrare amici, nemici, parenti, conoscenti.", "author": "Margherita Hack"},
     # {"text": "Gli uomini sono donne che non ce l'hanno fatta.", "author": "Unknown"},
