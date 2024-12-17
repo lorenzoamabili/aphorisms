@@ -10,7 +10,7 @@ app.config['MAIL_USE_SSL'] = True
 app.config['MAIL_USERNAME'] = 'lorenzo.amabili@protonmail.com'  # Your email
 # Your email password (or app password)
 app.config['MAIL_PASSWORD'] = 'kepaA7oUkLtdZy'
-app.config['MAIL_DEFAULT_SENDER'] = 'lorenzo.amabili@protonmail.com'
+app.config['MAIL_DEFAULT_SENDER'] = 'lorenzo.amabili@gmail.com'
 
 mail = Mail(app)
 
