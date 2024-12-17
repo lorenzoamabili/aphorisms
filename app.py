@@ -1,9 +1,53 @@
-from flask import Flask, render_template, request, jsonify, session
-import random
+from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, session
+from flask_mail import Mail, Message
 
 app = Flask(__name__)
-# For session management (not directly used here)
-app.secret_key = 'your_secret_key'
+
+# Flask-Mail configuration
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'  # Use Gmail's SMTP server
+app.config['MAIL_PORT'] = 465  # Secure SSL port for Gmail
+app.config['MAIL_USE_SSL'] = True
+app.config['MAIL_USERNAME'] = 'lorenzo.amabili@protonmail.com'  # Your email
+# Your email password (or app password)
+app.config['MAIL_PASSWORD'] = 'kepaA7oUkLtdZy'
+app.config['MAIL_DEFAULT_SENDER'] = 'lorenzo.amabili@protonmail.com'
+
+mail = Mail(app)
+
+# Route to handle form submission
+
+
+@app.route('/submit-suggestion', methods=['POST'])
+def submit_suggestion():
+    # Get form data
+    name = request.form['name']
+    email = request.form['email']
+    aphorism = request.form['aphorism']
+    message = request.form['message']
+
+    # Compose the email content
+    email_content = f"""
+    Name: {name if name else 'Anonymous'}
+    Email: {email}
+    Suggested Aphorism: {aphorism}
+    Additional Message: {message if message else 'No additional message'}
+    """
+
+    # Prepare the email message
+    msg = Message('New Aphorism Suggestion',
+                  # Replace with the admin's email
+                  recipients=['lorenzo.amabili@protonmail.com'])
+    msg.body = email_content
+
+    try:
+        # Send the email
+        mail.send(msg)
+        flash('Thank you for your suggestion!', 'success')
+    except Exception as e:
+        flash(f'Something went wrong: {str(e)}', 'error')
+
+    return redirect(url_for('index'))
+
 
 # List of aphorisms
 aphorisms = {
