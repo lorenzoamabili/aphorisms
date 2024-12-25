@@ -667,17 +667,17 @@ def get_aphorisms():
     return jsonify(aphorisms.get(lang, aphorisms['en']))
 
 
-// @ app.route('/add_aphorism', methods=['POST'])
-// def add_aphorism():
-// """Add a new aphorism to the current language."""
-// lang = session.get('lang', 'en')
-// new_text = request.form.get('aphorism')
-// new_author = request.form.get('author', 'Unknown')
+# @ app.route('/add_aphorism', methods=['POST'])
+# def add_aphorism():
+#     """Add a new aphorism to the current language."""
+#     lang = session.get('lang', 'en')
+#     new_text = request.form.get('aphorism')
+#     new_author = request.form.get('author', 'Unknown')
 
-// if new_text:
-// aphorisms[lang].append({"text": new_text, "author": new_author})
-// return jsonify({'message': 'Aphorism added successfully!'}), 200
-// return jsonify({'message': 'Invalid input.'}), 400
+#     if new_text:
+#         aphorisms[lang].append({"text": new_text, "author": new_author})
+#         return jsonify({'message': 'Aphorism added successfully!'}), 200
+#         return jsonify({'message': 'Invalid input.'}), 400
 
 
 if __name__ == '__main__':
