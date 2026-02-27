@@ -1,0 +1,1048 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Genaphorism</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Cinzel:wght@400;600&display=swap" rel="stylesheet" />
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ink:        #1a160f;
+      --ink-faded:  #6b5f4e;
+      --paper:      #f5f0e8;
+      --paper-dark: #ede5d5;
+      --gold:       #b8860b;
+      --gold-light: #d4a843;
+      --red:        #8b2020;
+      --line:       rgba(26,22,15,0.15);
+      --shadow:     rgba(26,22,15,0.12);
+    }
+
+    html { font-size: 16px; }
+
+    body {
+      background-color: var(--paper);
+      color: var(--ink);
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow-x: hidden;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    }
+
+    /* ── Top bar ── */
+    .top-bar {
+      width: 100%;
+      background: var(--ink);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 40px;
+    }
+    .top-bar-brand {
+      font-family: 'Cinzel', serif;
+      font-size: 0.7rem;
+      letter-spacing: 0.25em;
+      color: var(--gold-light);
+      text-transform: uppercase;
+    }
+    .lang-toggle { display: flex; gap: 4px; }
+    .lang-btn {
+      font-family: 'Cinzel', serif;
+      font-size: 0.65rem;
+      letter-spacing: 0.15em;
+      padding: 4px 12px;
+      border: 1px solid rgba(180,140,40,0.4);
+      background: transparent;
+      color: #a0906a;
+      cursor: pointer;
+      border-radius: 2px;
+      transition: all 0.25s;
+      text-transform: uppercase;
+    }
+    .lang-btn.active, .lang-btn:hover { background: var(--gold); color: var(--ink); border-color: var(--gold); }
+
+    /* ── Header ── */
+    header { text-align: center; padding: 64px 20px 32px; }
+    .header-rule { width: 1px; height: 48px; background: var(--gold); margin: 0 auto 24px; opacity: 0.5; }
+    header h1 {
+      font-family: 'Cinzel', serif;
+      font-size: clamp(2.2rem, 6vw, 4rem);
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      color: var(--ink);
+      line-height: 1;
+      text-transform: uppercase;
+    }
+    header .subtitle {
+      font-family: 'IM Fell English', serif;
+      font-style: italic;
+      font-size: 1rem;
+      color: var(--ink-faded);
+      margin-top: 10px;
+      letter-spacing: 0.04em;
+    }
+    .header-ornament { display: flex; align-items: center; justify-content: center; gap: 16px; margin-top: 20px; opacity: 0.35; }
+    .header-ornament::before, .header-ornament::after { content: ''; flex: 1; max-width: 80px; height: 1px; background: var(--ink); }
+
+    /* ── Counter ── */
+    .counter-row {
+      font-family: 'Cinzel', serif;
+      font-size: 0.62rem; letter-spacing: 0.2em;
+      color: var(--ink-faded); text-align: center;
+      margin-bottom: 40px; text-transform: uppercase;
+    }
+    .counter-row span { color: var(--gold); font-weight: 600; }
+
+    /* ── Card ── */
+    .stage { width: 100%; max-width: 760px; padding: 0 24px; perspective: 1200px; }
+    .card-wrap { position: relative; }
+    .card-wrap::before, .card-wrap::after {
+      content: ''; position: absolute; inset: 0;
+      border-radius: 2px; background: var(--paper-dark); border: 1px solid var(--line);
+    }
+    .card-wrap::before { transform: rotate(-1.2deg) translate(-3px, 3px); z-index: 0; }
+    .card-wrap::after  { transform: rotate(0.7deg) translate(2px, 4px);   z-index: 0; }
+    .card {
+      position: relative; z-index: 1;
+      background: #fff;
+      border: 1px solid rgba(26,22,15,0.12);
+      border-radius: 2px;
+      padding: 56px 64px 48px;
+      box-shadow: 0 2px 4px var(--shadow), 0 8px 24px var(--shadow), inset 0 0 80px rgba(245,240,232,0.6);
+      min-height: 260px;
+      display: flex; flex-direction: column; justify-content: space-between;
+      transform-origin: top center;
+      animation: cardReveal 0.55s cubic-bezier(0.22,1,0.36,1) both;
+    }
+    @keyframes cardReveal {
+      from { opacity: 0; transform: rotateX(8deg) translateY(20px); }
+      to   { opacity: 1; transform: rotateX(0deg) translateY(0); }
+    }
+    .card.leaving { animation: cardLeave 0.3s cubic-bezier(0.55,0,1,0.45) forwards; }
+    @keyframes cardLeave { to { opacity: 0; transform: rotateX(-12deg) translateY(-20px); } }
+
+    .card-top-rule {
+      position: absolute; top: 0; left: 56px; right: 56px; height: 3px;
+      background: linear-gradient(90deg, transparent, var(--gold) 30%, var(--gold) 70%, transparent);
+      opacity: 0.55;
+    }
+    .card-quote-mark {
+      font-family: 'IM Fell English', serif; font-size: 7rem; line-height: 0.6;
+      color: var(--gold); opacity: 0.18;
+      position: absolute; top: 36px; left: 44px;
+      pointer-events: none; user-select: none;
+    }
+    .card-text {
+      font-family: 'IM Fell English', serif; font-style: italic;
+      font-size: clamp(1.25rem, 2.5vw, 1.65rem); line-height: 1.75;
+      color: var(--ink); letter-spacing: 0.01em;
+      flex: 1; padding-bottom: 28px;
+    }
+    .card-footer { display: flex; align-items: center; justify-content: space-between; border-top: 1px solid var(--line); padding-top: 20px; }
+
+    /* Author — now a clickable button */
+    .card-author {
+      font-family: 'Cinzel', serif; font-size: 0.75rem;
+      letter-spacing: 0.15em; color: var(--ink-faded); text-transform: uppercase;
+      background: none; border: none; cursor: pointer; padding: 0;
+      transition: color 0.2s;
+    }
+    .card-author::before { content: '— '; color: var(--gold); letter-spacing: 0; }
+    .card-author:hover { color: var(--gold); }
+    .card-author[data-author="Unknown"],
+    .card-author[data-author="Sconosciuto"] { cursor: default; }
+    .card-author[data-author="Unknown"]:hover,
+    .card-author[data-author="Sconosciuto"]:hover { color: var(--ink-faded); }
+
+    .card-tag {
+      font-family: 'Cinzel', serif; font-size: 0.55rem; letter-spacing: 0.2em;
+      text-transform: uppercase; color: var(--gold);
+      border: 1px solid rgba(184,134,11,0.35); padding: 3px 10px; border-radius: 1px;
+    }
+
+    /* Card icon buttons */
+    .card-icon-btn {
+      position: absolute; top: 18px;
+      background: none; border: none; cursor: pointer;
+      color: var(--ink-faded); opacity: 0.35;
+      transition: opacity 0.2s, transform 0.2s; line-height: 1;
+    }
+    .card-icon-btn:hover { opacity: 0.8; }
+    #fav-btn    { right: 18px; font-size: 1.1rem; }
+    #fav-btn.active { opacity: 1; color: var(--red); }
+    #fav-btn:hover  { transform: scale(1.2); }
+    #share-menu-btn { right: 52px; font-size: 1rem; }
+
+    /* ── Share menu ── */
+    .share-menu {
+      position: absolute; top: 44px; right: 40px; z-index: 20;
+      background: var(--ink);
+      border: 1px solid rgba(212,168,67,0.25);
+      border-radius: 4px;
+      padding: 6px 0;
+      min-width: 190px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+      display: none;
+      animation: menuFade 0.18s ease;
+    }
+    @keyframes menuFade { from { opacity:0; transform:translateY(-6px); } to { opacity:1; transform:translateY(0); } }
+    .share-menu.open { display: block; }
+    .share-menu-item {
+      display: flex; align-items: center; gap: 10px;
+      font-family: 'Cinzel', serif; font-size: 0.65rem; letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #c8b896; padding: 9px 16px;
+      cursor: pointer; background: none; border: none; width: 100%; text-align: left;
+      transition: background 0.15s, color 0.15s;
+    }
+    .share-menu-item:hover { background: rgba(212,168,67,0.12); color: var(--gold-light); }
+    .share-menu-item .smi { font-size: 1rem; flex-shrink: 0; }
+    .share-menu hr { border: none; border-top: 1px solid rgba(255,255,255,0.07); margin: 4px 0; }
+
+    /* ── Toast ── */
+    .toast {
+      position: fixed; bottom: 32px; left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--ink); color: var(--gold-light);
+      font-family: 'Cinzel', serif; font-size: 0.65rem;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      padding: 10px 22px; border-radius: 2px;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.3s, transform 0.3s; z-index: 100;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* ── Controls ── */
+    .controls { margin-top: 44px; display: flex; align-items: center; justify-content: center; gap: 20px; flex-wrap: wrap; }
+    .btn-primary {
+      font-family: 'Cinzel', serif; font-size: 0.7rem;
+      letter-spacing: 0.22em; text-transform: uppercase;
+      padding: 14px 40px; background: var(--ink); color: var(--gold-light);
+      border: 1px solid var(--ink); border-radius: 2px; cursor: pointer;
+      transition: color 0.25s, transform 0.15s; position: relative; overflow: hidden;
+    }
+    .btn-primary::after {
+      content: ''; position: absolute; inset: 0;
+      background: var(--gold); transform: scaleX(0); transform-origin: left;
+      transition: transform 0.3s cubic-bezier(0.22,1,0.36,1); z-index: 0;
+    }
+    .btn-primary:hover::after { transform: scaleX(1); }
+    .btn-primary:hover { color: var(--ink); }
+    .btn-primary span { position: relative; z-index: 1; }
+    .btn-primary:active { transform: scale(0.97); }
+    .btn-secondary {
+      font-family: 'Cinzel', serif; font-size: 0.65rem;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      padding: 12px 24px; background: transparent;
+      color: var(--ink-faded); border: 1px solid var(--line); border-radius: 2px;
+      cursor: pointer; transition: border-color 0.2s, color 0.2s;
+    }
+    .btn-secondary:hover { border-color: var(--ink-faded); color: var(--ink); }
+
+    /* ── Keyboard hint ── */
+    .kbd-hint { margin-top: 16px; text-align: center; font-family: 'Cinzel', serif; font-size: 0.56rem; letter-spacing: 0.18em; color: var(--ink-faded); text-transform: uppercase; opacity: 0.4; }
+    kbd { display: inline-block; border: 1px solid currentColor; padding: 1px 5px; border-radius: 2px; font-size: 0.55rem; }
+
+    /* ── Progress ── */
+    .progress-bar-wrap { width: 100%; max-width: 760px; padding: 0 24px; margin-top: 44px; }
+    .progress-label { display: flex; justify-content: space-between; font-family: 'Cinzel', serif; font-size: 0.58rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-faded); margin-bottom: 8px; opacity: 0.7; }
+    .progress-track { height: 2px; background: rgba(26,22,15,0.1); border-radius: 1px; overflow: hidden; }
+    .progress-fill { height: 100%; background: linear-gradient(90deg, var(--gold), var(--gold-light)); border-radius: 1px; transition: width 0.6s cubic-bezier(0.22,1,0.36,1); }
+
+    /* ── Favourites panel ── */
+    .fav-panel { width: 100%; max-width: 760px; padding: 0 24px; margin-top: 24px; display: none; }
+    .fav-panel.open { display: block; }
+    .fav-panel-inner { border: 1px solid var(--line); border-radius: 2px; background: var(--paper-dark); padding: 32px 40px; }
+    .fav-panel h2 { font-family: 'Cinzel', serif; font-size: 0.7rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--ink-faded); margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
+    .fav-panel h2 button { font-family: 'Cinzel', serif; font-size: 0.6rem; letter-spacing: 0.1em; border: none; background: none; color: var(--ink-faded); cursor: pointer; text-transform: uppercase; opacity: 0.6; }
+    .fav-panel h2 button:hover { opacity: 1; }
+    .fav-list { list-style: none; display: flex; flex-direction: column; gap: 16px; }
+    .fav-item { border-bottom: 1px solid var(--line); padding-bottom: 16px; display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; animation: fadeIn 0.3s ease; }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; } }
+    .fav-item-text { font-family: 'IM Fell English', serif; font-style: italic; font-size: 1rem; line-height: 1.6; color: var(--ink); flex: 1; }
+    .fav-item-text small { display: block; font-family: 'Cinzel', serif; font-style: normal; font-size: 0.6rem; letter-spacing: 0.15em; color: var(--ink-faded); margin-top: 4px; text-transform: uppercase; }
+    .fav-remove { background: none; border: none; cursor: pointer; color: var(--ink-faded); font-size: 0.85rem; opacity: 0.4; transition: opacity 0.2s, color 0.2s; flex-shrink: 0; padding-top: 2px; }
+    .fav-remove:hover { opacity: 1; color: var(--red); }
+    .fav-empty { font-family: 'IM Fell English', serif; font-style: italic; font-size: 1rem; color: var(--ink-faded); text-align: center; padding: 20px 0; opacity: 0.6; }
+
+    /* ── Author modal (Random by Author) ── */
+    .modal-overlay {
+      position: fixed; inset: 0; z-index: 200;
+      background: rgba(15,12,8,0.72);
+      backdrop-filter: blur(4px);
+      display: flex; align-items: center; justify-content: center;
+      padding: 20px;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.3s;
+    }
+    .modal-overlay.open { opacity: 1; pointer-events: all; }
+    .modal {
+      background: var(--paper);
+      border: 1px solid rgba(26,22,15,0.15);
+      border-radius: 3px;
+      width: 100%; max-width: 640px;
+      max-height: 82vh;
+      display: flex; flex-direction: column;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.4);
+      transform: translateY(16px);
+      transition: transform 0.3s cubic-bezier(0.22,1,0.36,1);
+      overflow: hidden;
+    }
+    .modal-overlay.open .modal { transform: translateY(0); }
+
+    .modal-header {
+      padding: 24px 28px 16px;
+      border-bottom: 1px solid var(--line);
+      display: flex; align-items: flex-start; justify-content: space-between; gap: 16px;
+      flex-shrink: 0;
+    }
+    .modal-title {
+      font-family: 'Cinzel', serif; font-size: 0.72rem;
+      letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink-faded);
+    }
+    .modal-author-name {
+      font-family: 'Cinzel', serif; font-size: 1.1rem;
+      letter-spacing: 0.1em; color: var(--ink);
+      margin-top: 4px;
+    }
+    .modal-count {
+      font-family: 'Cinzel', serif; font-size: 0.62rem;
+      letter-spacing: 0.15em; color: var(--gold);
+      margin-top: 4px;
+    }
+    .modal-close {
+      background: none; border: none; cursor: pointer;
+      font-size: 1.1rem; color: var(--ink-faded); opacity: 0.5;
+      padding: 2px; flex-shrink: 0; transition: opacity 0.2s;
+    }
+    .modal-close:hover { opacity: 1; }
+
+    .modal-body { overflow-y: auto; padding: 20px 28px 28px; flex: 1; }
+    .modal-aph-list { list-style: none; display: flex; flex-direction: column; gap: 20px; }
+    .modal-aph-item {
+      border-left: 2px solid rgba(184,134,11,0.3);
+      padding: 4px 0 4px 16px;
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+    .modal-aph-item:hover { border-color: var(--gold); }
+    .modal-aph-item p {
+      font-family: 'IM Fell English', serif; font-style: italic;
+      font-size: 1rem; line-height: 1.65; color: var(--ink);
+    }
+    .modal-aph-item:hover p { color: var(--ink); }
+
+    .modal-footer {
+      padding: 16px 28px;
+      border-top: 1px solid var(--line);
+      display: flex; justify-content: flex-end; gap: 12px;
+      flex-shrink: 0;
+    }
+    .modal-btn-random {
+      font-family: 'Cinzel', serif; font-size: 0.65rem;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      padding: 10px 24px; background: var(--ink); color: var(--gold-light);
+      border: 1px solid var(--ink); border-radius: 2px; cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+    }
+    .modal-btn-random:hover { background: var(--gold); color: var(--ink); border-color: var(--gold); }
+
+    /* ── Footer ── */
+    footer { margin-top: 72px; text-align: center; padding: 32px 20px; border-top: 1px solid var(--line); width: 100%; }
+    footer p { font-family: 'Cinzel', serif; font-size: 0.58rem; letter-spacing: 0.2em; color: var(--ink-faded); text-transform: uppercase; opacity: 0.5; }
+
+    @media (max-width: 600px) {
+      .card { padding: 40px 28px 36px; }
+      .card-top-rule { left: 28px; right: 28px; }
+      .card-quote-mark { font-size: 5rem; top: 24px; left: 16px; }
+      .top-bar { padding: 10px 20px; }
+      .fav-panel-inner, .modal-header, .modal-body, .modal-footer { padding-left: 20px; padding-right: 20px; }
+      .share-menu { right: 8px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top bar -->
+  <div class="top-bar">
+    <div class="top-bar-brand">Genaphorism</div>
+    <div class="lang-toggle">
+      <button class="lang-btn active" data-lang="en" id="btn-en">EN</button>
+      <button class="lang-btn" data-lang="it" id="btn-it">IT</button>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header>
+    <div class="header-rule"></div>
+    <h1>Genaphorism</h1>
+    <p class="subtitle">A curated cabinet of human wisdom</p>
+    <div class="header-ornament"><span>✦</span></div>
+  </header>
+
+  <p class="counter-row" id="counter-row">Loading collection…</p>
+
+  <!-- Card -->
+  <div class="stage">
+    <div class="card-wrap">
+      <div class="card" id="aphorism-card">
+        <div class="card-top-rule"></div>
+        <div class="card-quote-mark">"</div>
+
+        <!-- Share menu button -->
+        <button class="card-icon-btn" id="share-menu-btn" title="Share">↗</button>
+
+        <!-- Share dropdown -->
+        <div class="share-menu" id="share-menu">
+          <button class="share-menu-item" id="smi-copy">
+            <span class="smi">⎘</span> Copy to clipboard
+          </button>
+          <button class="share-menu-item" id="smi-twitter">
+            <span class="smi">𝕏</span> Share on X / Twitter
+          </button>
+          <button class="share-menu-item" id="smi-whatsapp">
+            <span class="smi">💬</span> Share on WhatsApp
+          </button>
+          <hr>
+          <button class="share-menu-item" id="smi-linkedin">
+            <span class="smi">in</span> Share on LinkedIn
+          </button>
+        </div>
+
+        <!-- Favourite button -->
+        <button class="card-icon-btn" id="fav-btn" title="Save to favourites">♥</button>
+
+        <p class="card-text" id="aphorism-text">…</p>
+
+        <div class="card-footer">
+          <!-- Author — clickable to open "by author" modal -->
+          <button class="card-author" id="aphorism-author" data-author="">Unknown</button>
+          <span class="card-tag" id="aphorism-lang-tag">EN</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Controls -->
+  <div class="controls">
+    <button class="btn-secondary" id="fav-panel-toggle">❤ Favourites <span id="fav-count"></span></button>
+    <button class="btn-primary" id="new-btn"><span>Next aphorism →</span></button>
+  </div>
+
+  <p class="kbd-hint">Press <kbd>Space</kbd> or <kbd>→</kbd> for the next one</p>
+
+  <!-- Progress -->
+  <div class="progress-bar-wrap">
+    <div class="progress-label">
+      <span>Aphorisms read</span>
+      <span id="progress-text">0 / 0</span>
+    </div>
+    <div class="progress-track">
+      <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+    </div>
+  </div>
+
+  <!-- Favourites drawer -->
+  <div class="fav-panel" id="fav-panel">
+    <div class="fav-panel-inner">
+      <h2>Saved Aphorisms <button id="fav-clear">Clear all</button></h2>
+      <ul class="fav-list" id="fav-list">
+        <li class="fav-empty">No saved aphorisms yet.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Author modal -->
+  <div class="modal-overlay" id="author-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <div>
+          <div class="modal-title">Aphorisms by</div>
+          <div class="modal-author-name" id="modal-author-name">—</div>
+          <div class="modal-count" id="modal-count"></div>
+        </div>
+        <button class="modal-close" id="modal-close">✕</button>
+      </div>
+      <div class="modal-body">
+        <ul class="modal-aph-list" id="modal-aph-list"></ul>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" id="modal-close-btn">Close</button>
+        <button class="modal-btn-random" id="modal-random-btn">↻ Random from this author</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <footer><p>A personal collection · Lorenzo Amabili</p></footer>
+
+  <script>
+  (function () {
+    /* ── Data ── */
+    const aphorisms = {
+      en: [
+        { text: "People live for years and years, but in reality, they truly live only for a small part of those years, in the years when they are able to do what they were born for. Then, there, they are happy. The rest of the time is just time spent waiting or remembering.", author: "A. Baricco" },
+        { text: "Reality: the dream of a mad philosopher.", author: "A. Bierce" },
+        { text: "Those who say it's impossible should not interrupt those who are doing it.", author: "A. Einstein" },
+        { text: "Life is like riding a bicycle. To keep your balance, you must keep moving.", author: "Albert Einstein" },
+        { text: "At least in the evening, especially in the evening, I would like to meet someone to talk to, to circulate emotions, to give myself air, to discover myself through them, my sensitivity never fully expressed except faintly on paper. In the evening, the sense of emptiness, though not anguishing, generates an unnecessary and annoying melancholy in my thoughts, because melancholy freezes them and spoils them, and alone I cannot detach myself from it to move beyond my turmoil.", author: "Aldo Busi" },
+        { text: "Our patience is unlimited, but not passive and inert.", author: "Antonio Gramsci" },
+        { text: "I am not a poet, but a man with a passion for poetry. I am not a musician, but a man with a passion for music. I am not a master, but a man thirsty for knowledge. I am not an artist, but a man who loves to paint every corner of the earth. I am not a politician, but a man who thinks about the world's problems. For all that I am and all that I am not, one life is not enough. May I have another, please?", author: "Arnoldo Fó" },
+        { text: "The passion for destruction is also a creative passion.", author: "Bakunin" },
+        { text: "Revolution is always three-quarters fantasy and one-quarter reality.", author: "Bakunin" },
+        { text: "Worry more about your conscience than your reputation. Your conscience is what you are; your reputation is what others think of you. What others think of you is their problem.", author: "C. Chaplin" },
+        { text: "In the world, there are three types of friends: those who love us, those who protect us, and those who hate us.", author: "Chamfort" },
+        { text: "What surprised me most about Western men is that they lose their health to make money and then lose their money to recover their health. They think so much about the future that they forget to live the present, so they cannot live either the present or the future. They live as if they will never die and die as if they had never lived.", author: "D.L." },
+        { text: "Time for reading, like time for loving, expands time for living.", author: "Daniel Pennac" },
+        { text: "There is no greater sorrow than to recall a happy time in misery.", author: "Dante Alighieri" },
+        { text: "Gifts are like advice: they please mostly those who give them.", author: "E. Henriot" },
+        { text: "Do not solve a problem with the same mentality that created it.", author: "Einstein" },
+        { text: "I always dreamed of painting a smile, but I never succeeded.", author: "Francis Bacon" },
+        { text: "The worst solitude is being deprived of sincere friendship.", author: "Francis Bacon" },
+        { text: "Hope is a good breakfast but a bad supper.", author: "Francis Bacon" },
+        { text: "Women are mistresses for young men, companions for middle age, and nurses for the old.", author: "Francis Bacon" },
+        { text: "A man who contemplates revenge keeps his wounds bleeding.", author: "Francis Bacon" },
+        { text: "Let's settle for making people think, not try to convince them.", author: "G. Braque" },
+        { text: "You can easily judge the character of a man by how he treats those who can do nothing for him.", author: "Goethe" },
+        { text: "The difficult thing is not knowing, but knowing how to use what you know.", author: "Han Fei Tzu" },
+        { text: "Freedom is the ability to doubt, the ability to make mistakes, the ability to seek, to experiment, to say no to any authority, literary, artistic, philosophical, religious, social, and even political.", author: "Ignazio Silone" },
+        { text: "A person's soul is hidden in their gaze, which is why we fear being looked in the eye.", author: "Jim Morrison" },
+        { text: "Life is not about surviving the storm but about learning to dance in the rain.", author: "Kahlil Gibran" },
+        { text: "Then we gaze at each other and love each other, and I give her life and warmth, and she gives me a reason to live.", author: "The Alchemist" },
+        { text: "Those accustomed to traveling, like sheep, know that it is always necessary to leave one day.", author: "The Alchemist" },
+        { text: "The talent you have is the gift God has given you, what you do with your talent is the gift you give to God.", author: "The Alchemist" },
+        { text: "The darkest hour was the one that came before the sun's birth.", author: "The Alchemist" },
+        { text: "Everything that happens once may never happen again. But everything that happens twice will certainly happen a third time.", author: "The Alchemist" },
+        { text: "A quest always begins with the Beginner's Luck and always ends with the Conqueror's Test.", author: "The Alchemist" },
+        { text: "Of what I can be to myself, not only can you know nothing, but neither can I.", author: "L. Pirandello" },
+        { text: "Study the science of art. Study the art of science. Develop your senses—especially learn how to see. Realize that everything connects to everything else.", author: "Leonardo Da Vinci" },
+        { text: "The reality I have for you is in the form you give me; but it is reality for you and not for me; the reality you have for me is in the form I give you; but it is reality for me and not for you; and for myself, I have no other reality than in the form I manage to give myself. And how? By building myself, of course.", author: "Luigi Pirandello" },
+        { text: "The fact that so many people choose to live in ways that reduce shared purpose and destiny to just a few others around them and consider everything else a threat to their life and values is very concerning, because it is a form of contemporary tribalism.", author: "Margaret Levi" },
+        { text: "I think the brain is the soul. I don't believe in life after death, much less in a communal-style paradise where I would meet friends, enemies, relatives, and acquaintances again.", author: "Margherita Hack" },
+        { text: "The same passions in men and women have different rhythms, which is why the sexes continue to misunderstand each other.", author: "Nietzsche" },
+        { text: "Everything should be taken in moderation, including moderation.", author: "Oscar Wilde" },
+        { text: "I know nothing, but I like everything.", author: "Paolo Sorrentino" },
+        { text: "When you know everything, you die soon and alone. You know the unspeakable.", author: "Paolo Sorrentino" },
+        { text: "I was twenty... I will not let anyone say that this is the best age of life...", author: "Paul Nizan" },
+        { text: "Every human being, during their life, can adopt two attitudes: to build or to plant. Builders can spend years working on their task, but sooner or later they finish what they were doing. Then they stop and remain there, limited by their own walls. When the building is finished, life loses its meaning. Those who plant suffer with storms and seasons, rarely resting. But, unlike a building, the garden never stops growing. It requires the gardener's attention but also allows them to live as if in a great adventure.", author: "Paulo Coelho" },
+        { text: "Probably, if love is not eternal, it is because memories do not remain true forever, and because life is made of a perpetual renewal of cells.", author: "Proust" },
+        { text: "Until the lion learns how to write, every story will glorify the hunter.", author: "African Proverb" },
+        { text: "To uproot a tree, you must begin by cutting its roots.", author: "Chinese proverb" },
+        { text: "Even today, like every day, I set aside some time to do nothing.", author: "Raymond Carver" },
+        { text: "You are never given a wish without also being given the power to make it come true.", author: "Richard Bach" },
+        { text: "Nothing is true or false, but it is the thinking that makes it so.", author: "Shakespeare" },
+        { text: "The illusion of knowing and understanding that comes from having information always available, quickly, and effortlessly.", author: "Tania Lombrozo" },
+        { text: "Bad decisions make better stories.", author: "Found in Greece" },
+        { text: "The bad thing about not wanting to change is the risk of living a life not to its fullest.", author: "Unknown" },
+        { text: "Each of us is destined for a woman; if we manage to escape her, we are saved.", author: "Unknown" },
+        { text: "A smile is almost always caused by another smile.", author: "Unknown" },
+        { text: "Sometimes the heart sees things that are invisible to the eyes.", author: "Unknown" },
+        { text: "We human beings are inclined to project our thoughts beyond the present, both looking backward to the past and projecting ourselves into the future.", author: "Unknown" },
+        { text: "I love rough manners concealing gentle intentions.", author: "Unknown" },
+        { text: "Having a clear conscience is a sign of a bad memory.", author: "Unknown" },
+        { text: "Change everything except your wife and children.", author: "Unknown" },
+        { text: "Try to always get what you love, or you will have to love what you get.", author: "Unknown" },
+        { text: "Do not think you are on the right path, just because it is a well-trodden path.", author: "Unknown" },
+        { text: "The true snob fears to confess that he is bored when he is bored and that he is enjoying himself when he enjoys himself.", author: "Unknown" },
+        { text: "By living with three 20-year-old girls, I learned about feminism, parenthood, and 'nanana.'", author: "Unknown" },
+        { text: "God and the soldier are prayed to during famine and war, but when peace comes, God is forgotten, and the soldier is despised.", author: "Unknown" },
+        { text: "If you hurt me unconsciously, that hurts, but when you want to hurt me on purpose, that has no effect.", author: "Unknown" },
+        { text: "I was a better man with you as a woman than I ever was with a woman as a man.", author: "Unknown" },
+        { text: "To err is human; to blame someone else is even more human.", author: "Unknown" },
+        { text: "An eye for an eye leaves the whole world blind.", author: "Unknown" },
+        { text: "Happiness is never stopping to think about whether you have it.", author: "Unknown" },
+        { text: "Fake it till you make it.", author: "Unknown" },
+        { text: "When the game is over, the king and the pawn go back into the same box.", author: "Unknown" },
+        { text: "Men are women who didn't make it.", author: "Unknown" },
+        { text: "I do not understand why women do not appreciate when a man finally manages to reflect their beauty.", author: "Unknown" },
+        { text: "True friends are rare because the demand is low.", author: "Unknown" },
+        { text: "A kiss is a sweet reunion after a long search.", author: "Unknown" },
+        { text: "What do I not like about death? Perhaps the hour.", author: "Unknown" },
+        { text: "Failure is not definitive, winning is not definitive; only the courage to keep going matters.", author: "Unknown" },
+        { text: "Hard work pays off in the long run. Laziness pays off right away.", author: "Unknown" },
+        { text: "Venice is a Mecca for tourists, a lost homeland for locals, an academy for artists, and a multiple orgasm for beauty lovers.", author: "Unknown" },
+        { text: "In love, the important moments are the meeting and the breakup; everything in between is just filler.", author: "Unknown" },
+        { text: "Because, like in a game, the character you love the most is the monster. Without him, nothing would make sense.", author: "Unknown" },
+        { text: "Fool me once, shame on you. Fool me twice, shame on me.", author: "Unknown" },
+        { text: "Intelligence: when you notice your boss's reasoning doesn't make sense. Wisdom: when you avoid pointing it out.", author: "Unknown" },
+        { text: "Flattery is the art of telling someone what they think of themselves.", author: "Unknown" },
+        { text: "Love overlooks flaws; friendship loves them.", author: "Unknown" },
+        { text: "Love is a rebellious illness that contains its own cure, in which the sick do not want to heal, and the afflicted do not wish to recover.", author: "Unknown" },
+        { text: "Anxiety is like a rocking chair: you're always in motion but never moving forward.", author: "Unknown" },
+        { text: "Art is magic freed from the lie of truth.", author: "Unknown" },
+        { text: "Experience is the hardest teacher. It gives you the test first and the lesson afterward.", author: "Unknown" },
+        { text: "Hypochondria is the only illness I don't have.", author: "Unknown" },
+        { text: "It is not the strongest species that survive, nor the most intelligent. The species most able to adapt survives.", author: "Unknown" },
+        { text: "The wise learn from everyone. The average learns from their own mistakes. The fool learns from no one.", author: "Unknown" },
+        { text: "The man who tries to guess usually loses.", author: "Unknown" },
+        { text: "Then the entire movie of my life passed before my eyes in a moment! And I wasn't in the cast!", author: "Unknown" },
+        { text: "Man sleeps; only death can awaken him.", author: "Unknown" },
+        { text: "Depression is anger without enthusiasm.", author: "Unknown" },
+        { text: "If the path before you is clear, you're probably on someone else's.", author: "Unknown" },
+        { text: "After seeing you, my concept of beauty has changed.", author: "Unknown" },
+        { text: "Truth is always unbelievable.", author: "Unknown" },
+        { text: "Man says that time passes; time says that man passes.", author: "Unknown" },
+        { text: "Better to have a lion leading an army of sheep than a sheep leading an army of lions.", author: "Unknown" },
+        { text: "Better the joy of a sad smile than the sadness of not knowing how to smile.", author: "Unknown" },
+        { text: "I understood right away, I stopped looking for the 'dream girl'; I just needed one who wasn't a nightmare.", author: "Unknown" },
+        { text: "To understand people, listen to what they do not say.", author: "Unknown" },
+        { text: "Don't go to others' funerals; they won't come to yours.", author: "Unknown" },
+        { text: "Religion is something we really need in our life, like yoga, discounts, and cookies.", author: "Unknown" },
+        { text: "There are no facts, only interpretations.", author: "Unknown" },
+        { text: "I don't pretend to have all the answers. Honestly, I don't even care about all the questions.", author: "Unknown" },
+        { text: "Do not reinvent the wheel.", author: "Unknown" },
+        { text: "Every small attention given with the heart can be a brick to build a great relationship.", author: "Unknown" },
+        { text: "Those who are evil deep in their hearts probably know a lot.", author: "Unknown" },
+        { text: "For the love of the rose, one endures the thorns.", author: "Unknown" },
+        { text: "You can take my food, but you cannot take my taste.", author: "Unknown" },
+        { text: "Forgive me for searching for you so clumsily, inside you.", author: "Unknown" },
+        { text: "Can I offer you a drink, or should I just give you money?", author: "Unknown" },
+        { text: "I would kiss you! I would sleep with you! I would even marry you.", author: "Unknown" },
+        { text: "What I say and what you hear are not always the same thing.", author: "Unknown" },
+        { text: "Always remember that you are unique, just like everyone else.", author: "Unknown" },
+        { text: "The world is a high-dimensional space. Reduce and enjoy it.", author: "Unknown" },
+        { text: "If you are not part of the solution, then you are part of the problem.", author: "Unknown" },
+        { text: "If you are happy, don't shout too loud: sadness is a light sleeper.", author: "Unknown" },
+        { text: "If everything seems to be coming your way, you are probably in the wrong lane.", author: "Unknown" },
+        { text: "You are capable of making me feel excluded from nothing.", author: "Unknown" },
+        { text: "You are a force of nature.", author: "Unknown" },
+        { text: "You can forget the wrongs done to you, but never those you have done.", author: "Unknown" },
+        { text: "In the port of Agadir, the lights and the night. Buena Vista Social Club, white wine, and fish.", author: "Unknown" },
+        { text: "To hope is to risk disappointment. But risk must be faced, for the greatest risk in life is never taking any. Only those who take risks are free.", author: "Unknown" },
+        { text: "I have so many flaws that I had to develop several skills to balance them.", author: "Unknown" },
+        { text: "Jack of all trades, master of none.", author: "Unknown" },
+        { text: "One day opossum, one day hummingbird.", author: "Unknown" },
+        { text: "A legacy cannot be improvised. It must be built.", author: "Unknown" },
+        { text: "May you have the wind at your back, the sun shining on your face, and may the winds of destiny carry you far.", author: "Unknown" },
+        { text: "Inside me, there are two selves. One is smart, and one is stupid. The smart one has to explain things to the stupid one, and the stupid one gets to show off by explaining them to people.", author: "Unknown" },
+        { text: "It's incredible how many things you find while looking for something else.", author: "Unknown" },
+        { text: "Science says the first word on everything, and the last word on nothing.", author: "Victor Hugo" },
+        { text: "I have decided to be happy, because it is good for my health.", author: "Voltaire" },
+        { text: "Work keeps three great evils away from us: boredom, vice, and need.", author: "Voltaire" },
+        { text: "Everything I love loses half of its pleasure if you are not there to share it with me.", author: "Woody Allen" },
+      ],
+      it: [
+        { text: "La gente vive per anni e anni, ma in realtà è solo in una piccola parte di quegli anni che vive davvero, e cioè negli anni in cui riesce a fare ciò per cui è nata. Allora, lì, è felice. Il resto del tempo è tempo che passa ad aspettare o a ricordare.", author: "A. Baricco" },
+        { text: "Realtà: il sogno di un filosofo impazzito.", author: "A. Bierce" },
+        { text: "Chi dice che è impossibile... non dovrebbe disturbare chi ce la sta facendo.", author: "A. Einstein" },
+        { text: "La vita è come andare in bicicletta. Per mantenere l'equilibrio, devi continuare a muoverti.", author: "Albert Einstein" },
+        { text: "Almeno la sera, soprattutto la sera, vorrei incontrare una persona per parlarle, per far circolare le emozioni, darmi aria, scoprire me stesso tramite lei, la mia sensibilità mai formulata se non pallidamente sulla carta. La sera il senso di vuoto, seppure non angoscioso, genera una malinconia superflua e fastidiosa nei miei pensieri, perché la malinconia li blocca su se stessa e li sciupa e da solo non riesco a staccarmene per andare oltre il mio turbamento.", author: "Aldo Busi" },
+        { text: "La nostra pazienza è illimitata, ma non passiva e inerte.", author: "Antonio Gramsci" },
+        { text: "Io non sono un poeta, sono un uomo con la passione della poesia. Io non sono un musicista, sono un uomo con la passione della musica. Io non sono un maestro, sono un uomo con la sete del sapere. Io non sono un artista, sono un uomo che ama dipingere ogni angolo della terra. Io non sono un politico, sono un uomo che pensa ai problemi del mondo. E per tutto quello che sono e per tutto quello che non sono, una vita sola non basta, Potrei averne un'altra, per favore?", author: "Arnoldo Fó" },
+        { text: "La passione per la distruzione è anche una passione creativa.", author: "Bakunin" },
+        { text: "La rivoluzione è sempre per tre quarti fantasia e per un quarto realtà.", author: "Bakunin" },
+        { text: "Preoccupati più della tua coscienza che della reputazione. La tua coscienza è quello che tu sei, la tua reputazione è ciò che gli altri pensano di te. Quello che gli altri pensano di te è un problema loro.", author: "C. Chaplin" },
+        { text: "Nel mondo ci sono tre tipi di amici: quelli che ci amano, quelli che ci proteggono e quelli che ci odiano.", author: "Chamfort" },
+        { text: "Quello che mi ha sorpreso di più negli uomini dell'Occidente è che perdono la salute per fare i soldi e poi perdono i soldi per recuperare la salute. Pensano tanto al futuro che dimenticano di vivere il presente in tale maniera che non riescono a vivere né il presente, né il futuro. Vivono come se non dovessero morire mai e muoiono come se non avessero mai vissuto.", author: "D.L." },
+        { text: "Il tempo per leggere, come il tempo per amare, dilata il tempo per vivere...", author: "Daniel Pennac" },
+        { text: "Nessun maggior dolore, che ricordarsi del tempo felice, nella miseria.", author: "Dante Alighieri" },
+        { text: "I regali sono come i consigli: fanno piacere soprattutto a chi li dà.", author: "E. Henriot" },
+        { text: "Non risolvere un problema con la stessa mentalità che l'ha generato.", author: "Einstein" },
+        { text: "Ho sempre sognato di dipingere il sorriso, ma non ci sono mai riuscito.", author: "Francis Bacon" },
+        { text: "La peggior solitudine è essere privi di un'amicizia sincera.", author: "Francis Bacon" },
+        { text: "La speranza è una buona prima colazione, ma è una pessima cena.", author: "Francis Bacon" },
+        { text: "Le donne sono amanti per gli uomini giovani, compagne per la mezza età e infermiere per i vecchi.", author: "Francis Bacon" },
+        { text: "Un uomo che medita la vendetta, mantiene le sue ferite sempre sanguinanti.", author: "Francis Bacon" },
+        { text: "Accontentiamoci di far riflettere, non tentiamo di convincere.", author: "G. Braque" },
+        { text: "Puoi giudicare facilmente il carattere di un uomo dal modo in cui tratta coloro che non possono fare nulla per lui.", author: "Goethe" },
+        { text: "Difficile non è sapere, ma saper far uso di quello che si sa.", author: "Han Fei Tzu" },
+        { text: "La libertà è la possibilità di dubitare, la possibilità di sbagliare, la possibilità di cercare, di esperimentare, di dire no a una qualsiasi autorità, letteraria artistica filosofica religiosa sociale, e anche politica.", author: "Ignazio Silone" },
+        { text: "L'anima di una persona è nascosta nel suo sguardo, per questo abbiamo paura di farci guardare negli occhi.", author: "Jim Morrison" },
+        { text: "La vita non è una questione di come sopravvivere alla tempesta, ma di come danzare nella pioggia.", author: "Kahlil Gibran" },
+        { text: "Allora ci guardiamo e ci amiamo, e io le do vita e calore e lei mi dà una ragione per vivere.", author: "L'Alchimista" },
+        { text: "Chi è abituato a viaggiare, come le pecore, sa che è sempre necessario partire un giorno.", author: "L'Alchimista" },
+        { text: "Il talento che hai è il dono che Dio ha fatto a te, ciò che fai con il tuo talento è il dono che fai a Dio.", author: "L'Alchimista" },
+        { text: "L'ora più buia era quella che veniva prima del sorgere del sole.", author: "L'Alchimista" },
+        { text: "Tutto ciò che accade una volta potrebbe non accadere mai più. Ma tutto ciò che accade due volte, accadrà certamente una terza.", author: "L'Alchimista" },
+        { text: "Una ricerca inizia sempre con la Fortuna del Principiante e termina sempre con la Prova del Conquistatore.", author: "L'Alchimista" },
+        { text: "Di ciò che posso essere io per me, non solo non potete saper nulla voi, ma nulla neppure io stesso.", author: "L. Pirandello" },
+        { text: "Studia la scienza dell'arte. Studia l'arte della scienza. Sviluppa i tuoi sensi—impara soprattutto a vedere. Realizza che tutto è connesso a tutto il resto.", author: "Leonardo Da Vinci" },
+        { text: "La realtà che ho io per voi è nella forma che voi mi date; ma è realtà per voi e non per me; la realtà che voi avete per me è nella forma che io vi do; ma è realtà per me e non per voi; e per me stesso io non ho altra realtà se non nella forma che riesco a darmi. E come? Ma costruendomi, appunto.", author: "Luigi Pirandello" },
+        { text: "Il fatto che così tante persone scelgono di vivere in modi che riducono la comunione di propositi e di destino a pochi altri intorno a sé e di considerare tutto il resto come una minaccia per la propria vita e i propri valori è molto preoccupante, perché è una forma di tribalismo contemporaneo.", author: "Margaret Levi" },
+        { text: "Penso che il cervello sia l'anima, non credo alla vita dopo la morte ne tanto meno a un paradiso in versione condominiale, dove rincontrare amici, nemici, parenti, conoscenti.", author: "Margherita Hack" },
+        { text: "Le medesime passioni hanno nell'uomo e nella donna ritmi diversi, per questo i sessi continuano a fraintendersi.", author: "Nietzsche" },
+        { text: "Tutto va preso con moderazione, anche la moderazione.", author: "Oscar Wilde" },
+        { text: "Non so niente ma mi piace tutto.", author: "Paolo Sorrentino" },
+        { text: "Quando sai tutto muori presto e solo. Sai l'indicibile.", author: "Paolo Sorrentino" },
+        { text: "Avevo vent'anni... Non permetterò a nessuno di dire che questa è la più bella età della vita...", author: "Paul Nizan" },
+        { text: "Ogni essere umano, nel corso della propria esistenza, può adottare due atteggiamenti: costruire o piantare. I costruttori possono passare anni impegnati nel loro compito, ma presto o tardi concludono quello che stavano facendo. Allora si fermano, e restano lì, limitati dalle loro stesse pareti. Quando la costruzione è finita, la vita perde di significato. Quelli che piantano soffrono con le tempeste e le stagioni, raramente riposano. Ma, al contrario di un edificio, il giardino non cessa mai di crescere. Esso richiede l'attenzione del giardiniere, ma, nello stesso tempo, gli permette di vivere come in una grande avventura.", author: "Paulo Coelho" },
+        { text: "Probabilmente, se l'amore non è eterno è perché i ricordi non rimangono veri per sempre, e perché la vita è fatta di un perpetuo rinnovarsi delle cellule.", author: "Proust" },
+        { text: "Fino a quando il leone non imparerà a scrivere, ogni storia glorificherà il cacciatore.", author: "Proverbio africano" },
+        { text: "Per estirpare un albero si deve iniziare recidendone le radici.", author: "Proverbio cinese" },
+        { text: "Anche oggi, come ogni giorno, ho messo da parte un po di tempo per fare un bel niente.", author: "Raymond Carver" },
+        { text: "Mai ti è dato un desiderio senza che ti sia dato anche il potere di realizzarlo.", author: "Richard Bach" },
+        { text: "Nulla è vero o falso, ma è il pensarlo che lo rende tale.", author: "Shakespeare" },
+        { text: "L'illusione di sapere e comprensione che può risultare dall'avere informazioni sempre disponibili, prontamente e senza sforzo.", author: "Tania Lombrozo" },
+        { text: "Le cattive decisioni fanno migliori storie.", author: "Trovato in Grecia" },
+        { text: "\"Perché continui a dargli corda?\" \"Sono ottimista, magari s'impicca.\"", author: "Unknown" },
+        { text: "A ciascuno di noi il fato ha destinato una donna, se riusciamo a sfuggirle siamo salvi.", author: "Unknown" },
+        { text: "A provocare un sorriso è quasi sempre un altro sorriso.", author: "Unknown" },
+        { text: "A volte il cuore vede cose che sono invisibili agli occhi.", author: "Unknown" },
+        { text: "Allora tutto il film della mia vita mi è passato davanti agli occhi in un momento! E io non ero nel cast!", author: "Unknown" },
+        { text: "Amo i modi bruschi che nascondono intenzioni gentili.", author: "Unknown" },
+        { text: "Avere la coscienza pulita è segno di cattiva memoria.", author: "Unknown" },
+        { text: "Cambia tutto tranne tua moglie e i tuoi figli.", author: "Unknown" },
+        { text: "Cerca di ottenere sempre ciò che ami o dovrai accontentarti di amare ciò che ottieni.", author: "Unknown" },
+        { text: "Che cosa non mi piace della morte? Forse l'ora.", author: "Unknown" },
+        { text: "Chi è malvagio nel profondo del cuore probabilmente la sa lunga.", author: "Unknown" },
+        { text: "Cos'è bianco-nero-bianco-nero-bianco-nero-bianco-nero-bianco? Una suora che ruzzola dagli scalini.", author: "Unknown" },
+        { text: "Dentro di me ci sono due me. Uno è intelligente e uno è stupido. Quello intelligente deve spiegare a quello stupido come funzionano le cose e lasciargli il merito di spiegarle agli altri.", author: "Unknown" },
+        { text: "Dio e il soldato, durante la carestia e la guerra, vengono pregati, ma quando vi è la pace Dio è dimenticato e il soldato disprezzato.", author: "Unknown" },
+        { text: "Dopo averti visto, il mio concetto di bellezza è cambiato.", author: "Unknown" },
+        { text: "Ero un uomo migliore con te come donna di quanto non lo sia mai stato con una donna da uomo.", author: "Unknown" },
+        { text: "Errare è umano e dare la colpa a un altro è ancora più umano.", author: "Unknown" },
+        { text: "Felicitá è non fermarsi mai a pensare se la si ha.", author: "Unknown" },
+        { text: "Fingi finché non riesci.", author: "Unknown" },
+        { text: "Finito il gioco il re e il pedone tornano nella stessa scatola.", author: "Unknown" },
+        { text: "Gli uomini sono donne che non ce l'hanno fatta.", author: "Unknown" },
+        { text: "Ho così tanti difetti che ho dovuto sviluppare diverse abilità per bilanciarli.", author: "Unknown" },
+        { text: "I veri amici sono rari perchè è poca la domanda.", author: "Unknown" },
+        { text: "Il bacio è un dolce trovarsi dopo essersi a lungo cercati.", author: "Unknown" },
+        { text: "Il brutto di non voler cambiare è il rischio di viversi una vita non a pieno.", author: "Unknown" },
+        { text: "Il fallimento non è definitivo, vincere non è definitivo; conta solo il coraggio di continuare.", author: "Unknown" },
+        { text: "Il lavoro duro paga nel lungo periodo. La pigrizia paga subito.", author: "Unknown" },
+        { text: "Il mondo è uno spazio ad alta dimensionalità. Riduci e goditelo.", author: "Unknown" },
+        { text: "Il predatore è sicuro di sé, il dittatore è ansioso di perdere il potere.", author: "Unknown" },
+        { text: "Il vero snob teme di confessare che si annoia quando si annoia e che si diverte quando si diverte.", author: "Unknown" },
+        { text: "In amore importanti sono l'incontro e la rottura, tra i due, è solo riempimento.", author: "Unknown" },
+        { text: "Inevitabile destino di ogni sognatore è il risveglio.", author: "Unknown" },
+        { text: "Ingannami una volta, vergogna a te. Ingannami due volte, vergogna a me.", author: "Unknown" },
+        { text: "Intelligenza: quando ti accorgi che il ragionamento del tuo principale non fila. Saggezza: quando eviti di farglielo notare.", author: "Unknown" },
+        { text: "L'adulazione è l'arte di dire a una persona quello che pensa di sé stessa.", author: "Unknown" },
+        { text: "L'amore non vede i difetti, l'amicizia li ama.", author: "Unknown" },
+        { text: "L'amore è una malattia ribelle, che ha la sua cura in se stessa, in cui chi è malato non vuole guarirne e chi ne è infermo non desidera riaversi.", author: "Unknown" },
+        { text: "L'ansia è come una sedia a dondolo: sei sempre in movimento, ma non avanzi di un passo.", author: "Unknown" },
+        { text: "L'arte è la magia liberata dalla menzogna della verità.", author: "Unknown" },
+        { text: "L'esperienza è il tipo di insegnante più difficile. Prima ti fa l'esame, e poi ti spiega la lezione.", author: "Unknown" },
+        { text: "L'ipocondria è l'unica malattia che non ho.", author: "Unknown" },
+        { text: "L'uomo che cerca di indovinare, di solito perde.", author: "Unknown" },
+        { text: "L'uomo dice che il tempo passa; il tempo dice che l'uomo passa.", author: "Unknown" },
+        { text: "L'uomo dorme, solo la morte potrà svegliarlo.", author: "Unknown" },
+        { text: "La depressione è la rabbia senza entusiasmo.", author: "Unknown" },
+        { text: "La diversità è un valore, non un problema.", author: "Unknown" },
+        { text: "La verità è sempre incredibile.", author: "Unknown" },
+        { text: "Lo capii subito, smisi di cercare la 'ragazza dei sogni'; me ne bastava una che non fosse un incubo.", author: "Unknown" },
+        { text: "Meglio avere un leone a capo di un esercito di pecore, che una pecora a capo di un esercito di leoni.", author: "Unknown" },
+        { text: "Meglio la gioia di un sorriso triste che la tristezza di non saper sorridere.", author: "Unknown" },
+        { text: "Mentre l'orchestra di fiori si sgretola, io ballo.", author: "Unknown" },
+        { text: "Nel porto di Agadir, le luci e la notte. Buena Vista Social Club, vino bianco e pesce.", author: "Unknown" },
+        { text: "Noi esseri umani siamo portati a proiettare il nostro pensiero oltre il presente, sia andando a ritroso nel passato, sia proiettandoci nel futuro.", author: "Unknown" },
+        { text: "Non andate ai funerali degli altri, tanto loro non verranno al vostro.", author: "Unknown" },
+        { text: "Non capisco perché le donne non apprezzino quando un uomo riesce finalmente a riflettere la loro bellezza.", author: "Unknown" },
+        { text: "Non esistono fatti, ma solo interpretazioni.", author: "Unknown" },
+        { text: "Non pensare di essere sulla strada giusta, soltanto perché è un sentiero battuto.", author: "Unknown" },
+        { text: "Non pretendo di avere tutte le risposte. A dire la verità non m'interessano nemmeno tutte le domande.", author: "Unknown" },
+        { text: "Non reinventare la ruota.", author: "Unknown" },
+        { text: "Non è la specie più forte a sopravvivere, e nemmeno la più intelligente. Sopravvive la specie più predisposta al cambiamento.", author: "Unknown" },
+        { text: "Ogni piccola attenzione che si dà con il cuore può essere un mattone per costruire un grande rapporto.", author: "Unknown" },
+        { text: "Per amore della rosa, si sopportano le spine.", author: "Unknown" },
+        { text: "Per capire le persone, ascolta ciò che non dicono.", author: "Unknown" },
+        { text: "Perché come in un gioco, il personaggio a cui si vuol più bene è il mostro. Senza di lui nulla avrebbe più senso.", author: "Unknown" },
+        { text: "Perdonami per cercarti così goffamente, dentro di te.", author: "Unknown" },
+        { text: "Posso offrirti qualcosa da bere o vuoi direttamente i soldi??", author: "Unknown" },
+        { text: "Puoi prendere il mio cibo, ma non puoi prendere il mio gusto.", author: "Unknown" },
+        { text: "Quello che io dico e quello che tu senti non sono sempre la stessa cosa.", author: "Unknown" },
+        { text: "Ricorda sempre che sei unico, esattamente come tutti gli altri.", author: "Unknown" },
+        { text: "Se mi ferisci inconsciamente, fa male, ma quando vuoi ferirmi di proposito, non ha alcun effetto.", author: "Unknown" },
+        { text: "Se non sei parte della soluzione, allora sei parte del problema.", author: "Unknown" },
+        { text: "Se sei felice non gridare troppo: la tristezza ha il sonno leggero.", author: "Unknown" },
+        { text: "Se tutto sembra venirti incontro, probabilmente sei nella corsia sbagliata.", author: "Unknown" },
+        { text: "Sei capace di farmi sentire escluso dal niente.", author: "Unknown" },
+        { text: "Sei una prepotenza della natura.", author: "Unknown" },
+        { text: "Si può dimenticare il male ricevuto, ma quello fatto mai!", author: "Unknown" },
+        { text: "Solo ed in cattiva compagnia.", author: "Unknown" },
+        { text: "Sperare vuol dire rischiare la delusione. Ma il rischio va affrontato perchè il massimo rischio nella vita è di non rischiare mai. Soltanto chi rischia è libero.", author: "Unknown" },
+        { text: "Ti bacerei! Dormirei con te! Ti sposerei anche.", author: "Unknown" },
+        { text: "Tuttofare, padrone di nulla.", author: "Unknown" },
+        { text: "Un giorno opossum, un giorno colibrì.", author: "Unknown" },
+        { text: "Un giorno un uomo bello, elegante e orgoglioso del suo aspetto venne a incontrare Socrate. Socrate gli disse: 'Parla, così potrò vederti.'", author: "Unknown" },
+        { text: "Un patrimonio non si improvvisa. Si costruisce.", author: "Unknown" },
+        { text: "Una persona creativa e' pronta a qualsiasi cosa perché sicuramente se lo e' gia' immaginata almeno una volta.", author: "Unknown" },
+        { text: "Vedo la gioia della vita, la gentilezza e le carezze. Questo è per te, amore mio, te lo dovevo e l'ho fatto. Ora sono solo per te. Sono libero dai miei obblighi, possiamo avvicinarci e guardarci dentro. Non ti ho evitato, ti ho protetto. E ora sono solo per te. Anima mia, ti amo.", author: "Unknown" },
+        { text: "Venezia è una La Mecca per i turisti, una patria perduta per i locali, un'accademia per gli artisti e un orgasmo multiplo per gli amanti della bellezza.", author: "Unknown" },
+        { text: "Vivendo con tre ragazze di vent'anni, ho imparato il femminismo, la genitorialità e 'nanana'.", author: "Unknown" },
+        { text: "È incredibile quante cose si trovano mentre cerchi qualcos'altro.", author: "Unknown" },
+        { text: "La scienza dice la prima parola su tutto, e l'ultima parola su niente.", author: "Victor Hugo" },
+        { text: "Ho deciso di essere felice, perché fa bene alla salute.", author: "Voltaire" },
+        { text: "Il lavoro allontana da noi tre grandi mali: la noia, il vizio e il bisogno.", author: "Voltaire" },
+        { text: "Tutto ciò che amo perde metà del suo piacere se tu non sei lì a dividerlo con me.", author: "Woody Allen" },
+      ]
+    };
+
+    /* ── State ── */
+    let lang    = localStorage.getItem('aph_lang') || 'en';
+    let seen    = JSON.parse(localStorage.getItem('aph_seen_' + lang) || '[]');
+    let current = null;
+    let favs    = JSON.parse(localStorage.getItem('aph_favs') || '[]');
+
+    /* ── DOM ── */
+    const card          = document.getElementById('aphorism-card');
+    const textEl        = document.getElementById('aphorism-text');
+    const authorEl      = document.getElementById('aphorism-author');
+    const tagEl         = document.getElementById('aphorism-lang-tag');
+    const counterRow    = document.getElementById('counter-row');
+    const progressFill  = document.getElementById('progress-fill');
+    const progressTxt   = document.getElementById('progress-text');
+    const favBtn        = document.getElementById('fav-btn');
+    const shareMenuBtn  = document.getElementById('share-menu-btn');
+    const shareMenu     = document.getElementById('share-menu');
+    const newBtn        = document.getElementById('new-btn');
+    const favPanel      = document.getElementById('fav-panel');
+    const favPanelTog   = document.getElementById('fav-panel-toggle');
+    const favList       = document.getElementById('fav-list');
+    const favCount      = document.getElementById('fav-count');
+    const favClear      = document.getElementById('fav-clear');
+    const toast         = document.getElementById('toast');
+    const btnEn         = document.getElementById('btn-en');
+    const btnIt         = document.getElementById('btn-it');
+    const authorModal   = document.getElementById('author-modal');
+    const modalAuthor   = document.getElementById('modal-author-name');
+    const modalCount    = document.getElementById('modal-count');
+    const modalList     = document.getElementById('modal-aph-list');
+    const modalClose    = document.getElementById('modal-close');
+    const modalCloseBtn = document.getElementById('modal-close-btn');
+    const modalRandom   = document.getElementById('modal-random-btn');
+
+    /* ── Helpers ── */
+    function saveLang() { localStorage.setItem('aph_lang', lang); }
+    function saveSeen() { localStorage.setItem('aph_seen_' + lang, JSON.stringify(seen)); }
+    function saveFavs() { localStorage.setItem('aph_favs', JSON.stringify(favs)); }
+
+    function setLangUI() {
+      btnEn.classList.toggle('active', lang === 'en');
+      btnIt.classList.toggle('active', lang === 'it');
+    }
+
+    function pick() {
+      const pool = aphorisms[lang];
+      let unseen = pool.filter((_, i) => !seen.includes(i));
+      if (!unseen.length) { seen = []; saveSeen(); unseen = [...pool]; }
+      const idx = pool.indexOf(unseen[Math.floor(Math.random() * unseen.length)]);
+      seen.push(idx); saveSeen();
+      return pool[idx];
+    }
+
+    function updateProgress() {
+      const total = aphorisms[lang].length;
+      const count = seen.length;
+      progressFill.style.width = Math.round((count / total) * 100) + '%';
+      progressTxt.textContent  = count + ' / ' + total;
+      counterRow.innerHTML = `Collection: <span>${total}</span> aphorisms · ${lang === 'en' ? 'English' : 'Italian'}`;
+    }
+
+    function isFaved(text) { return favs.some(f => f.text === text); }
+
+    function syncFavBtn() {
+      favBtn.classList.toggle('active', current ? isFaved(current.text) : false);
+    }
+
+    function syncAuthorBtn() {
+      const isUnknown = !current || ['Unknown','Sconosciuto','unknown','sconosciuto'].includes(current.author);
+      authorEl.title = isUnknown ? '' : `See all aphorisms by ${current.author}`;
+    }
+
+    let toastTimer;
+    function showToast(msg) {
+      toast.textContent = msg;
+      toast.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove('show'), 2400);
+    }
+
+    function renderFavs() {
+      favCount.textContent = favs.length ? `(${favs.length})` : '';
+      if (!favs.length) {
+        favList.innerHTML = '<li class="fav-empty">No saved aphorisms yet.</li>';
+        return;
+      }
+      favList.innerHTML = favs.map((f, i) => `
+        <li class="fav-item">
+          <div class="fav-item-text">${f.text}<small>— ${f.author}</small></div>
+          <button class="fav-remove" data-i="${i}" title="Remove">✕</button>
+        </li>`).join('');
+      favList.querySelectorAll('.fav-remove').forEach(btn => {
+        btn.addEventListener('click', () => {
+          favs.splice(Number(btn.dataset.i), 1);
+          saveFavs(); renderFavs(); syncFavBtn();
+        });
+      });
+    }
+
+    /* ── Card transition ── */
+    function displayAph(aph) {
+      current = aph;
+      textEl.textContent = aph.text;
+      authorEl.textContent = aph.author;
+      authorEl.dataset.author = aph.author;
+      tagEl.textContent = lang.toUpperCase();
+      syncFavBtn(); syncAuthorBtn(); updateProgress();
+    }
+
+    function show(sourceAph) {
+      const aph = sourceAph || pick();
+      card.classList.add('leaving');
+      card.addEventListener('animationend', function handler() {
+        card.classList.remove('leaving');
+        card.removeEventListener('animationend', handler);
+        displayAph(aph);
+        card.style.animation = 'none';
+        card.offsetHeight;
+        card.style.animation = '';
+      }, { once: true });
+    }
+
+    /* ── Share feature ── */
+    function getShareText() {
+      if (!current) return '';
+      return `"${current.text}" — ${current.author}`;
+    }
+
+    shareMenuBtn.addEventListener('click', e => {
+      e.stopPropagation();
+      shareMenu.classList.toggle('open');
+    });
+
+    document.addEventListener('click', () => shareMenu.classList.remove('open'));
+    shareMenu.addEventListener('click', e => e.stopPropagation());
+
+    document.getElementById('smi-copy').addEventListener('click', () => {
+      navigator.clipboard?.writeText(getShareText())
+        .then(() => showToast('Copied to clipboard ✓'))
+        .catch(() => showToast('Copy not supported'));
+      shareMenu.classList.remove('open');
+    });
+
+    document.getElementById('smi-twitter').addEventListener('click', () => {
+      const tweet = encodeURIComponent(getShareText() + '\n\nvia genaphorism.onrender.com');
+      window.open(`https://twitter.com/intent/tweet?text=${tweet}`, '_blank');
+      shareMenu.classList.remove('open');
+    });
+
+    document.getElementById('smi-whatsapp').addEventListener('click', () => {
+      const msg = encodeURIComponent(getShareText());
+      window.open(`https://wa.me/?text=${msg}`, '_blank');
+      shareMenu.classList.remove('open');
+    });
+
+    document.getElementById('smi-linkedin').addEventListener('click', () => {
+      const url = encodeURIComponent(window.location.href);
+      const title = encodeURIComponent(getShareText().slice(0, 100));
+      window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${url}&title=${title}`, '_blank');
+      shareMenu.classList.remove('open');
+    });
+
+    /* ── Random by Author feature ── */
+    let modalAuthorAphs = [];
+
+    function openAuthorModal(author) {
+      if (!author || ['Unknown','Sconosciuto','unknown','sconosciuto'].includes(author)) return;
+      const pool = aphorisms[lang];
+      modalAuthorAphs = pool.filter(a => a.author === author);
+      if (!modalAuthorAphs.length) return;
+
+      modalAuthor.textContent = author;
+      const n = modalAuthorAphs.length;
+      modalCount.textContent = `${n} aphorism${n !== 1 ? 's' : ''} in this collection`;
+
+      modalList.innerHTML = modalAuthorAphs.map((a, i) => `
+        <li class="modal-aph-item" data-i="${i}">
+          <p>${a.text}</p>
+        </li>`).join('');
+
+      modalList.querySelectorAll('.modal-aph-item').forEach(item => {
+        item.addEventListener('click', () => {
+          show(modalAuthorAphs[Number(item.dataset.i)]);
+          closeModal();
+        });
+      });
+
+      authorModal.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+      authorModal.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    authorEl.addEventListener('click', () => {
+      if (current) openAuthorModal(current.author);
+    });
+
+    modalClose.addEventListener('click', closeModal);
+    modalCloseBtn.addEventListener('click', closeModal);
+    authorModal.addEventListener('click', e => { if (e.target === authorModal) closeModal(); });
+
+    modalRandom.addEventListener('click', () => {
+      if (!modalAuthorAphs.length) return;
+      const rnd = modalAuthorAphs[Math.floor(Math.random() * modalAuthorAphs.length)];
+      show(rnd);
+      closeModal();
+    });
+
+    document.addEventListener('keydown', e => {
+      if (e.code === 'Escape') closeModal();
+      if (authorModal.classList.contains('open')) return;
+      if (e.code === 'Space' || e.code === 'ArrowRight') { e.preventDefault(); show(); }
+    });
+
+    /* ── Favourites ── */
+    favBtn.addEventListener('click', () => {
+      if (!current) return;
+      if (isFaved(current.text)) {
+        favs = favs.filter(f => f.text !== current.text);
+        showToast('Removed from favourites');
+      } else {
+        favs.push({ text: current.text, author: current.author });
+        showToast('Saved to favourites ❤');
+      }
+      saveFavs(); renderFavs(); syncFavBtn();
+    });
+
+    favPanelTog.addEventListener('click', () => {
+      favPanel.classList.toggle('open');
+      favPanelTog.textContent = favPanel.classList.contains('open')
+        ? '▲ Hide favourites'
+        : `❤ Favourites ${favs.length ? `(${favs.length})` : ''}`;
+    });
+
+    favClear.addEventListener('click', () => {
+      if (!favs.length) return;
+      if (confirm('Clear all saved aphorisms?')) {
+        favs = []; saveFavs(); renderFavs(); syncFavBtn();
+        showToast('All favourites cleared');
+      }
+    });
+
+    /* ── Lang switch ── */
+    newBtn.addEventListener('click', () => show());
+
+    [btnEn, btnIt].forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (lang === btn.dataset.lang) return;
+        lang = btn.dataset.lang;
+        seen = JSON.parse(localStorage.getItem('aph_seen_' + lang) || '[]');
+        saveLang(); setLangUI(); show();
+      });
+    });
+
+    /* ── Init ── */
+    setLangUI();
+    const first = pick();
+    displayAph(first);
+    renderFavs();
+
+  })();
+  </script>
+</body>
+</html>
